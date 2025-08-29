@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1">&lt;meta charset="UTF-8" /&gt;</p>
+<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1" /&gt;</p>
+<p class="p1">&lt;title&gt;Work Log – iPhone Friendly (CSV &amp; Excel)&lt;/title&gt;</p>
+<p class="p1">&lt;meta name="apple-mobile-web-app-capable" content="yes"&gt;</p>
+<p class="p1">&lt;meta name="apple-mobile-web-app-status-bar-style" content="default"&gt;</p>
+<p class="p1">&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>:root { --radius: 14px; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>* { box-sizing: border-box; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>body { font-family: -apple-system, system-ui, Segoe UI, Roboto, Arial; margin: 0; background: #ffffff; color: #111; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>header { padding: 16px; text-align: center; background: #f8fafc; border-bottom: 1px solid #e6e8ef; position: sticky; top: 0; z-index: 10; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>h1 { margin: 0 0 6px; font-size: clamp(20px, 3.5vw, 28px); }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.sub { color: #555; font-size: 13px; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.wrap { max-width: 1000px; margin: 0 auto; padding: 16px; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.card { background: #fff; border: 1px solid #e6e8ef; border-radius: var(--radius); padding: 16px; box-shadow: 0 6px 18px rgba(0,0,0,.06); }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>label { display: block; font-size: 12px; color:#444; margin-bottom: 6px; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>input, select { width: 100%; padding: 10px 12px; background: #fff; border: 1px solid #d6dae5; color: #111; border-radius: 10px; outline: none; transition: border .2s, box-shadow .2s; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>input:focus, select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.15); }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>@media (max-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>@media (max-width: 520px) { .grid { grid-template-columns: 1fr; } }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>button { padding: 10px 14px; border-radius: 999px; border: 1px solid #d6dae5; background: #3b82f6; color: #fff; cursor: pointer; font-weight: 600; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>button.ghost { background: #ffffff; color: #111; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>button.safe { background: #10b981; border-color: #10b981; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>button.info { background: #0ea5e9; border-color: #0ea5e9; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>button.warn { background: #ef4444; border-color: #ef4444; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.muted { color:#666; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.table { width: 100%; border-collapse: collapse; margin-top: 16px; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.table th, .table td { border-bottom: 1px solid #e6e8ef; padding: 10px 8px; text-align: left; vertical-align: top; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.table thead th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color:#666; background:#f8fafc; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.table tbody tr:nth-child(odd){ background:#fcfdff; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.pill { display:inline-block; padding: 6px 10px; border-radius: 999px; border: 1px solid #d6dae5; background: #fff; font-size: 12px; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.status-pending { background:#fff7ed; color:#9a3412; border-color:#fed7aa; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.status-inprogress { background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.status-completed { background:#ecfdf5; color:#065f46; border-color:#a7f3d0; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.status-onhold { background:#f4f4f5; color:#3f3f46; border-color:#e4e4e7; }</p>
+<p class="p1">&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;header&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;h1&gt;Work Log&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sub"&gt;iPhone-friendly • Import/Export &lt;b&gt;CSV&lt;/b&gt; &amp; &lt;b&gt;Excel&lt;/b&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="grid"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;&lt;label&gt;Date&lt;/label&gt;&lt;input id="date" type="date"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;&lt;label&gt;Time&lt;/label&gt;&lt;input id="time" type="time"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;&lt;label&gt;Location&lt;/label&gt;&lt;input id="where" type="text"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;&lt;label&gt;Type&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;select id="type"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;option&gt;Meeting&lt;/option&gt;&lt;option&gt;Safety Briefing&lt;/option&gt;&lt;option&gt;Kick Off&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;option&gt;Progress Meeting&lt;/option&gt;&lt;option&gt;Site Inspection&lt;/option&gt;&lt;option&gt;Incident&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;option&gt;Training&lt;/option&gt;&lt;option&gt;Fire Drill&lt;/option&gt;&lt;option&gt;Audit&lt;/option&gt;&lt;option&gt;Other (custom)&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input id="typeCustom" type="text" placeholder="Custom type" style="display:none;margin-top:8px;" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;&lt;label&gt;Item *&lt;/label&gt;&lt;input id="item" type="text" placeholder="What you did"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;&lt;label&gt;PIC&lt;/label&gt;&lt;input id="pic" type="text" placeholder="Person in charge"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;&lt;label&gt;Next Action&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;select id="next"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;option&gt;Reply minutes&lt;/option&gt;&lt;option&gt;Update in system&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;option&gt;Delegate information&lt;/option&gt;&lt;option&gt;For record&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;&lt;label&gt;Deadline&lt;/label&gt;&lt;input id="deadline" type="date"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;&lt;label&gt;Status&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;select id="status"&gt;&lt;option&gt;Pending&lt;/option&gt;&lt;option&gt;In Progress&lt;/option&gt;&lt;option&gt;Completed&lt;/option&gt;&lt;option&gt;On Hold&lt;/option&gt;&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="actions"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="addBtn"&gt;Add Entry&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="clearFormBtn" class="ghost"&gt;Clear Form&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="card" style="margin-top:16px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="actions"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;input id="search" type="search" placeholder="Search…" style="flex:1; min-width:220px;" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;select id="statusFilter"&gt;&lt;option&gt;All&lt;/option&gt;&lt;option&gt;Pending&lt;/option&gt;&lt;option&gt;In Progress&lt;/option&gt;&lt;option&gt;Completed&lt;/option&gt;&lt;option&gt;On Hold&lt;/option&gt;&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="importCsvBtn" class="ghost"&gt;Import CSV&lt;/button&gt;&lt;input id="importCsvInput" type="file" accept=".csv,text/csv" style="display:none;" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="exportCsvBtn" class="safe"&gt;Export CSV&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="exportXlsBtn" class="info"&gt;Export XLS&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="deleteAllBtn" class="warn"&gt;Delete All&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;table class="table" id="table"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;tr&gt;&lt;th&gt;Date&lt;/th&gt;&lt;th&gt;Time&lt;/th&gt;&lt;th&gt;Location&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Item&lt;/th&gt;&lt;th&gt;PIC&lt;/th&gt;&lt;th&gt;Next&lt;/th&gt;&lt;th&gt;Deadline&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Actions&lt;/th&gt;&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;tbody id="tbody"&gt;&lt;/tbody&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/table&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">const LS='worklog_v1';</p>
+<p class="p1">function todayStr(){const d=new Date();const tz=new Date(d.getTime()-d.getTimezoneOffset()*60000);return tz.toISOString().slice(0,10);}</p>
+<p class="p1">function timeStr(){const d=new Date();return d.toTimeString().slice(0,5);}</p>
+<p class="p1">function load(){try{return JSON.parse(localStorage.getItem(LS)||'[]')}catch(e){return[]}}</p>
+<p class="p1">function save(a){localStorage.setItem(LS,JSON.stringify(a))}</p>
+<p class="p1">function render(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const arr=load(); const tbody=document.getElementById('tbody'); tbody.innerHTML='';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>arr.forEach((r,i)=&gt;{const tr=document.createElement('tr');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>tr.innerHTML=`&lt;td&gt;${r.date}&lt;/td&gt;&lt;td&gt;${r.time}&lt;/td&gt;&lt;td&gt;${r.where}&lt;/td&gt;&lt;td&gt;${r.type}&lt;/td&gt;&lt;td&gt;${r.item}&lt;/td&gt;&lt;td&gt;${r.pic}&lt;/td&gt;&lt;td&gt;${r.next}&lt;/td&gt;&lt;td&gt;${r.deadline}&lt;/td&gt;&lt;td&gt;${r.status}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;td&gt;&lt;button onclick="del(${i})"&gt;Del&lt;/button&gt;&lt;/td&gt;`; tbody.appendChild(tr)});</p>
+<p class="p1">}</p>
+<p class="p1">function add(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const date=document.getElementById('date').value||todayStr();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const time=document.getElementById('time').value||timeStr();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const where=document.getElementById('where').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const type=document.getElementById('type').value==='Other (custom)'?(document.getElementById('typeCustom').value||'Other'):document.getElementById('type').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const item=document.getElementById('item').value.trim(); if(!item){alert('Item required');return;}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const pic=document.getElementById('pic').value; const next=document.getElementById('next').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const deadline=document.getElementById('deadline').value; const status=document.getElementById('status').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const arr=load(); arr.push({date,time,where,type,item,pic,next,deadline,status}); save(arr); render();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('item').value='';</p>
+<p class="p1">}</p>
+<p class="p1">function del(i){const arr=load();arr.splice(i,1);save(arr);render();}</p>
+<p class="p1">document.getElementById('addBtn').onclick=add;</p>
+<p class="p1">document.getElementById('clearFormBtn').onclick=()=&gt;{['where','item','pic','deadline','typeCustom'].forEach(id=&gt;document.getElementById(id).value='');}</p>
+<p class="p1">document.getElementById('deleteAllBtn').onclick=()=&gt;{if(confirm('Delete all?')){save([]);render();}}</p>
+<p class="p1">// export CSV</p>
+<p class="p1">document.getElementById('exportCsvBtn').onclick=()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const arr=load(); const head=['Date','Time','Location','Type','Item','PIC','Next','Deadline','Status'];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const rows=arr.map(r=&gt;[r.date,r.time,r.where,r.type,r.item,r.pic,r.next,r.deadline,r.status]);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const csv=[head,...rows].map(r=&gt;r.map(c=&gt;`"${(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const blob=new Blob(["\ufeff"+csv],{type:'text/csv'}); const a=document.createElement('a');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>a.href=URL.createObjectURL(blob); a.download='worklog.csv'; a.click();</p>
+<p class="p1">};</p>
+<p class="p1">// export XLS</p>
+<p class="p1">document.getElementById('exportXlsBtn').onclick=()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const arr=load(); const head=['Date','Time','Location','Type','Item','PIC','Next','Deadline','Status'];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const rows=arr.map(r=&gt;`&lt;tr&gt;&lt;td&gt;${r.date}&lt;/td&gt;&lt;td&gt;${r.time}&lt;/td&gt;&lt;td&gt;${r.where}&lt;/td&gt;&lt;td&gt;${r.type}&lt;/td&gt;&lt;td&gt;${r.item}&lt;/td&gt;&lt;td&gt;${r.pic}&lt;/td&gt;&lt;td&gt;${r.next}&lt;/td&gt;&lt;td&gt;${r.deadline}&lt;/td&gt;&lt;td&gt;${r.status}&lt;/td&gt;&lt;/tr&gt;`).join('');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const html=`&lt;table&gt;&lt;tr&gt;${head.map(h=&gt;`&lt;th&gt;${h}&lt;/th&gt;`).join('')}&lt;/tr&gt;${rows}&lt;/table&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const blob=new Blob([html],{type:'application/vnd.ms-excel'}); const a=document.createElement('a');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>a.href=URL.createObjectURL(blob); a.download='worklog.xls'; a.click();</p>
+<p class="p1">};</p>
+<p class="p1">// import CSV</p>
+<p class="p1">document.getElementById('importCsvBtn').onclick=()=&gt;document.getElementById('importCsvInput').click();</p>
+<p class="p1">document.getElementById('importCsvInput').onchange=(e)=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const f=e.target.files[0]; if(!f)return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const r=new FileReader(); r.onload=ev=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const lines=ev.target.result.split(/\r?\n/).filter(l=&gt;l.trim());</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const head=lines.shift().split(',').map(h=&gt;h.replace(/"/g,'').trim().toLowerCase());</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const arr=load(); lines.forEach(line=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const vals=line.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(v=&gt;v.replace(/^"|"$/g,'').replace(/""/g,'"'));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>arr.push({date:vals[head.indexOf('date')]||'',time:vals[head.indexOf('time')]||'',where:vals[head.indexOf('location')]||'',type:vals[head.indexOf('type')]||'',item:vals[head.indexOf('item')]||'',pic:vals[head.indexOf('pic')]||'',next:vals[head.indexOf('next')]||'',deadline:vals[head.indexOf('deadline')]||'',status:vals[head.indexOf('status')]||''});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}); save(arr);render();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}; r.readAsText(f);</p>
+<p class="p1">};</p>
+<p class="p1">render();</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
