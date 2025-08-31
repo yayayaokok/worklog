@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Work Log – Simple (CSV/XLS Import & Export Fixed)</title>
+  <style>
+    body { font-family: system-ui, Arial; margin:0; background:#fff; color:#222; }
+    header { padding:16px; text-align:center; background:#f8fafc; border-bottom:1px solid #e6e8ef; }
+    h1 { margin:0 0 6px; font-size:24px; }
+    .wrap { max-width:1000px; margin:0 auto; padding:16px; }
+    .card { background:#fff; border:1px solid #e6e8ef; border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.05); }
+    label { font-size:12px; display:block; margin-bottom:4px; color:#444; }
+    input,select { width:100%; padding:8px; border:1px solid #d6dae5; border-radius:6px; }
+    .grid { display:grid; grid-template-columns: repeat(4,1fr); gap:12px; }
+    @media(max-width:800px){ .grid {grid-template-columns:1fr 1fr;} }
+    @media(max-width:500px){ .grid {grid-template-columns:1fr;} }
+    .actions { margin-top:12px; }
+    button { padding:8px 14px; border:none; border-radius:6px; cursor:pointer; font-weight:600; }
+    #addBtn { background:#3b82f6; color:#fff; }
+    #exportCsvBtn { background:#10b981; color:#fff; }
+    #exportXlsBtn { background:#0ea5e9; color:#fff; }
+    #importCsvBtn, #importXlsBtn { background:#f59e0b; color:#fff; }
+    .table { width:100%; border-collapse:collapse; margin-top:16px; }
+    th,td { border-bottom:1px solid #eee; padding:8px; text-align:left; font-size:14px; }
+    th { background:#f8fafc; text-transform:uppercase; font-size:12px; color:#555; }
+    .status-badge { padding:4px 8px; border-radius:999px; border:1px solid #ccc; font-size:12px; }
+    .status-pending { background:#fff7ed; color:#9a3412; border-color:#fcd34d; }
+    .status-inprogress { background:#eff6ff; color:#1d4ed8; border-color:#93c5fd; }
+    .status-completed { background:#ecfdf5; color:#065f46; border-color:#6ee7b7; }
+    .status-onhold { background:#f4f4f5; color:#3f3f46; border-color:#d4d4d8; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Work Log (Simple)</h1>
+  <div style="color:#555">Add entries, Import/Export <b>CSV</b> and <b>XLS</b>. Only <b>Item</b> is required.</div>
+</header>
+<div class="wrap">
+  <div class="card">
+    <div class="grid">
+      <div><label>Date</label><input id="date" type="date"></div>
+      <div><label>Time</label><input id="time" type="time"></div>
+      <div><label>Location</label><input id="where" type="text"></div>
+      <div><label>Type</label>
+        <select id="type">
+          <option>Meeting</option><option>Safety Briefing</option><option>Kick Off</option><option>Progress Meeting</option><option>Site Inspection</option><option>BOTEG</option><option>Incident</option><option>Training</option><option>Fire Drill</option><option>Audit</option><option>Other (custom)</option>
+        </select>
+        <input id="typeCustom" type="text" placeholder="Custom type" style="display:none;margin-top:4px;">
+      </div>
+      <div><label>Item *</label><input id="item" type="text"></div>
+      <div><label>PIC</label><input id="pic" type="text"></div>
+      <div><label>Next Action</label>
+        <select id="next"><option>Reply minutes</option><option>Update in system</option><option>Delegate information</option><option>For record</option></select>
+      </div>
+      <div><label>Deadline</label><input id="deadline" type="date"></div>
+      <div><label>Status</label>
+        <select id="status"><option>Pending</option><option>In Progress</option><option>Completed</option><option>On Hold</option></select>
+      </div>
+    </div>
+    <div class="actions"><button id="addBtn">Add Entry</button></div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+      <input id="search" type="search" placeholder="Search…" style="flex:1; min-width:200px;">
+      <select id="statusFilter"><option>All</option><option>Pending</option><option>In Progress</option><option>Completed</option><option>On Hold</option></select>
+      <button id="importCsvBtn">Import CSV</button><input id="importCsvInput" type="file" accept=".csv,text/csv" style="display:none;">
+      <button id="importXlsBtn">Import XLS</button><input id="importXlsInput" type="file" accept=".xls,application/vnd.ms-excel" style="display:none;">
+      <button id="exportCsvBtn">Export CSV</button>
+      <button id="exportXlsBtn">Export XLS</button>
+    </div>
+    <table class="table"><thead><tr>
+      <th>Date</th><th>Time</th><th>Location</th><th>Type</th><th>Item</th><th>PIC</th><th>Next Action</th><th>Deadline</th><th>Status</th><th>Actions</th>
+    </tr></thead><tbody id="tbody"></tbody></table>
+  </div>
+</div>
+
+<script>
+// Utilities
+function todayStr(){ const d=new Date();const tz=new Date(d.getTime()-d.getTimezoneOffset()*60000);return tz.toISOString().slice(0,10);}
+function timeStr(){ const d=new Date(); return d.toTimeString().slice(0,5);}
+function getUUID(){try{return crypto.randomUUID();}catch(e){return Date.now()+''+Math.random();}}
+
+// Storage
+const LS_KEY='worklog_simple_v4_csvxlsfix';
+
+// Elements
+const dateEl=document.getElementById('date'), timeEl=document.getElementById('time'), whereEl=document.getElementById('where'), typeSel=document.getElementById('type'), typeCustomEl=document.getElementById('typeCustom'), itemEl=document.getElementById('item'), picEl=document.getElementById('pic'), nextSel=document.getElementById('next'), deadlineEl=document.getElementById('deadline'), statusSel=document.getElementById('status');
+const addBtn=document.getElementById('addBtn'), tbody=document.getElementById('tbody'), searchEl=document.getElementById('search'), statusFilterEl=document.getElementById('statusFilter');
+const importCsvBtn=document.getElementById('importCsvBtn'), importCsvInput=document.getElementById('importCsvInput');
+const importXlsBtn=document.getElementById('importXlsBtn'), importXlsInput=document.getElementById('importXlsInput');
+const exportCsvBtn=document.getElementById('exportCsvBtn'), exportXlsBtn=document.getElementById('exportXlsBtn');
+
+typeSel.addEventListener('change', ()=>{
+  if((typeSel.value||'').toLowerCase().startsWith('other')){ typeCustomEl.style.display='block'; }
+  else { typeCustomEl.style.display='none'; typeCustomEl.value=''; }
+});
+
+function load(){ try { return JSON.parse(localStorage.getItem(LS_KEY)||'[]'); } catch(e){ return []; } }
+function save(arr){ localStorage.setItem(LS_KEY, JSON.stringify(arr)); }
+
+// CSV parser (robust)
+function parseCsv(text){
+  const rows=[]; let row=[]; let field=''; let inQuotes=false;
+  text=text.replace(/\\r\\n?/g,'\\n');
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(inQuotes){
+      if(c==='\"'){
+        if(text[i+1]==='\"'){ field+='\"'; i++; }
+        else { inQuotes=false; }
+      } else { field+=c; }
+    } else {
+      if(c==='\"'){ inQuotes=true; }
+      else if(c===','){ row.push(field); field=''; }
+      else if(c==='\\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+      else { field+=c; }
+    }
+  }
+  if(field!=='' || row.length){ row.push(field); rows.push(row); }
+  return rows;
+}
+function csvEscape(s){ if(s==null) s=''; s=String(s); if(/[\",\\n]/.test(s)) return '\"'+s.replace(/\"/g,'\"\"')+'\"'; return s; }
+
+// Render
+function statusClass(s){ const t=(s||'').toLowerCase(); if(t.includes('progress')) return 'status-inprogress'; if(t.includes('complete')) return 'status-completed'; if(t.includes('hold')) return 'status-onhold'; return 'status-pending'; }
+function filtered(arr){
+  const q=(searchEl.value||'').toLowerCase();
+  const st=statusFilterEl.value||'All';
+  return arr.filter(r=>{
+    const textHit=!q || [r.date,r.time,r.where,r.type,r.item,r.pic,r.next,r.deadline,r.status].join(' ').toLowerCase().includes(q);
+    const statusHit=(st==='All')||((r.status||'')===st);
+    return textHit && statusHit;
+  });
+}
+function render(){
+  const arr=load().slice().sort((a,b)=> ((b.date||'')+' '+(b.time||'')).localeCompare((a.date||'')+' '+(a.time||'')) );
+  const show=filtered(arr);
+  tbody.innerHTML='';
+  if(!show.length){ const tr=document.createElement('tr'); tr.innerHTML='<td colspan="10" style="color:#777;padding:12px;">No data yet.</td>'; tbody.appendChild(tr); return; }
+  for(const r of show){
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${r.date||''}</td><td>${r.time||''}</td><td>${r.where||''}</td><td>${r.type||''}</td><td>${r.item||''}</td><td>${r.pic||''}</td><td>${r.next||''}</td><td>${r.deadline||''}</td>
+    <td><button type="button" class="status-badge ${statusClass(r.status)}" data-status-id="${r.id}">${r.status||'Pending'}</button></td>
+    <td class="cell-actions">
+      <button type="button" data-dup="${r.id}">Duplicate</button>
+      <button type="button" data-edit="${r.id}">Edit</button>
+      <button type="button" data-del="${r.id}">Delete</button>
+    </td>`;
+    tbody.appendChild(tr);
+  }
+  // Row actions
+  tbody.querySelectorAll('button[data-del]').forEach(btn=>btn.addEventListener('click', ()=>{
+    const id=btn.getAttribute('data-del'); const arr=load().filter(x=>x.id!==id); save(arr); render();
+  }));
+  tbody.querySelectorAll('button[data-dup]').forEach(btn=>btn.addEventListener('click', ()=>{
+    const id=btn.getAttribute('data-dup'); const arr=load(); const rec=arr.find(x=>x.id===id); if(!rec) return;
+    const copy={...rec, id:getUUID(), ts:Date.now()}; arr.push(copy); save(arr); render();
+  }));
+  tbody.querySelectorAll('button[data-edit]').forEach(btn=>btn.addEventListener('click', ()=>{
+    const id=btn.getAttribute('data-edit'); const arr=load(); const i=arr.findIndex(x=>x.id===id); if(i===-1) return;
+    const r=arr[i];
+    const newItem = prompt('Edit Item:', r.item||'');
+    if(newItem==null) return;
+    r.item = newItem;
+    save(arr); render();
+  }));
+  tbody.querySelectorAll('button[data-status-id]').forEach(btn=>btn.addEventListener('click', ()=>{
+    const id=btn.getAttribute('data-status-id'); const arr=load(); const i=arr.findIndex(x=>x.id===id); if(i===-1) return;
+    const list=['Pending','In Progress','Completed','On Hold'];
+    const cur=(arr[i].status||'Pending'); let idx=list.findIndex(s=>s.toLowerCase()===cur.toLowerCase()); if(idx<0) idx=0;
+    arr[i].status=list[(idx+1)%list.length]; save(arr); render();
+  }));
+}
+
+// Add Entry
+function addEntry(){
+  if(!dateEl.value) dateEl.value=todayStr();
+  if(!timeEl.value) timeEl.value=timeStr();
+  const item=(itemEl.value||'').trim();
+  if(!item){ alert('Item required'); return; }
+  const rec={ id:getUUID(), date:dateEl.value, time:timeEl.value, where:(whereEl.value||''), type:((typeSel.value||'').toLowerCase().startsWith('other') ? (typeCustomEl.value||'Other') : typeSel.value), item, pic:(picEl.value||''), next:(nextSel.value||''), deadline:(deadlineEl.value||''), status:(statusSel.value||'Pending'), ts:Date.now() };
+  const arr=load(); arr.push(rec); save(arr); render(); itemEl.value='';
+}
+
+// Export
+function exportCSV(){
+  const arr=filtered(load());
+  const header=['Date','Time','Location','Type','Item','PIC','Next Action','Deadline','Status'];
+  const rows=arr.map(r=>[r.date,r.time,r.where,r.type,r.item,r.pic,r.next,r.deadline,r.status]);
+  const lines=[header,...rows].map(cols=>cols.map(csvEscape).join(',')).join('\\n');
+  // UTF-8 with BOM for Excel compatibility
+  const BOM = '\\ufeff';
+  const blob=new Blob([BOM + lines],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='worklog.csv'; a.click();
+}
+
+function exportXLS(){
+  const arr=filtered(load());
+  const header=['Date','Time','Location','Type','Item','PIC','Next Action','Deadline','Status'];
+  const rowsHtml = arr.map(r=> `<tr><td>${(r.date||'')}</td><td>${(r.time||'')}</td><td>${(r.where||'')}</td><td>${(r.type||'')}</td><td>${(r.item||'')}</td><td>${(r.pic||'')}</td><td>${(r.next||'')}</td><td>${(r.deadline||'')}</td><td>${(r.status||'')}</td></tr>`).join('');
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><table border="1"><thead><tr>${header.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rowsHtml}</tbody></table></body></html>`;
+  const blob = new Blob([html], {type: 'application/vnd.ms-excel'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='worklog.xls'; a.click();
+}
+
+// Import CSV
+function importCSVFromText(text){
+  const rows=parseCsv(text).filter(r=>r.length && r.some(x=>String(x).trim()!==''));
+  if(rows.length===0){ alert('No data found in CSV.'); return; }
+  const header = rows[0].map(h=>String(h||'').trim().toLowerCase());
+  function idx(name){ return header.indexOf(name.toLowerCase()); }
+  const iDate=idx('date'), iTime=idx('time'), iWhere=idx('location'), iType=idx('type'), iItem=idx('item'), iPic=idx('pic'), iNext=idx('next action'), iDeadline=idx('deadline'), iStatus=idx('status');
+  if(iItem===-1){ alert('CSV needs an \"Item\" column.'); return; }
+  const arr=load();
+  let added=0;
+  for(let r=1; r<rows.length; r++){
+    const row = rows[r];
+    const rec = {
+      id:getUUID(),
+      date: iDate>-1 ? (row[iDate]||'') : '',
+      time: iTime>-1 ? (row[iTime]||'') : '',
+      where: iWhere>-1 ? (row[iWhere]||'') : '',
+      type: iType>-1 ? (row[iType]||'') : '',
+      item: iItem>-1 ? (row[iItem]||'') : '',
+      pic:  iPic>-1 ? (row[iPic]||'') : '',
+      next: iNext>-1 ? (row[iNext]||'') : '',
+      deadline: iDeadline>-1 ? (row[iDeadline]||'') : '',
+      status: iStatus>-1 ? (row[iStatus]||'') : 'Pending',
+      ts: Date.now()
+    };
+    if(!rec.item) continue;
+    if(!rec.date) rec.date = todayStr();
+    if(!rec.time) rec.time = timeStr();
+    arr.push(rec); added++;
+    if(added>20000){ alert('Import limit reached (20,000 rows).'); break; }
+  }
+  save(arr); render();
+  alert('Imported ' + added + ' records from CSV.');
+}
+
+// Import XLS (expects HTML-table .xls exported by this app)
+function importXLSFromHTML(htmlText){
+  try{
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlText, 'text/html');
+    const table = doc.querySelector('table');
+    if(!table){ alert('No table found in XLS file.'); return; }
+    const rows = Array.from(table.querySelectorAll('tr')).map(tr => Array.from(tr.children).map(td => td.innerText));
+    if(rows.length<2){ alert('No data found in XLS.'); return; }
+    const header = rows[0].map(h=>String(h||'').trim().toLowerCase());
+    function idx(name){ return header.indexOf(name.toLowerCase()); }
+    const iDate=idx('date'), iTime=idx('time'), iWhere=idx('location'), iType=idx('type'), iItem=idx('item'), iPic=idx('pic'), iNext=idx('next action'), iDeadline=idx('deadline'), iStatus=idx('status');
+    if(iItem===-1){ alert('XLS needs an \"Item\" column.'); return; }
+    const arr=load();
+    let added=0;
+    for(let r=1; r<rows.length; r++){
+      const row = rows[r];
+      const rec = {
+        id:getUUID(),
+        date: iDate>-1 ? (row[iDate]||'') : '',
+        time: iTime>-1 ? (row[iTime]||'') : '',
+        where: iWhere>-1 ? (row[iWhere]||'') : '',
+        type: iType>-1 ? (row[iType]||'') : '',
+        item: iItem>-1 ? (row[iItem]||'') : '',
+        pic:  iPic>-1 ? (row[iPic]||'') : '',
+        next: iNext>-1 ? (row[iNext]||'') : '',
+        deadline: iDeadline>-1 ? (row[iDeadline]||'') : '',
+        status: iStatus>-1 ? (row[iStatus]||'') : 'Pending',
+        ts: Date.now()
+      };
+      if(!rec.item) continue;
+      if(!rec.date) rec.date = todayStr();
+      if(!rec.time) rec.time = timeStr();
+      arr.push(rec); added++;
+      if(added>20000){ alert('Import limit reached (20,000 rows).'); break; }
+    }
+    save(arr); render();
+    alert('Imported ' + added + ' records from XLS.');
+  }catch(e){
+    alert('Could not read XLS. If the file was not exported from this app, please re-save as CSV.');
+  }
+}
+
+// Wire up
+addBtn.addEventListener('click', addEntry);
+searchEl.addEventListener('input', render);
+statusFilterEl.addEventListener('input', render);
+exportCsvBtn.addEventListener('click', exportCSV);
+exportXlsBtn.addEventListener('click', exportXLS);
+
+importCsvBtn.addEventListener('click', ()=> importCsvInput.click());
+importCsvInput.addEventListener('change', ()=>{
+  const f=importCsvInput.files && importCsvInput.files[0];
+  if(f){ const reader=new FileReader(); reader.onload=e=> importCSVFromText(e.target.result||''); reader.readAsText(f); }
+  importCsvInput.value='';
+});
+
+importXlsBtn.addEventListener('click', ()=> importXlsInput.click());
+importXlsInput.addEventListener('change', ()=>{
+  const f=importXlsInput.files && importXlsInput.files[0];
+  if(f){ const reader=new FileReader(); reader.onload=e=> importXLSFromHTML(e.target.result||''); reader.readAsText(f); }
+  importXlsInput.value='';
+});
+
+// Initial render
+render();
+</script>
+</body>
+</html>
